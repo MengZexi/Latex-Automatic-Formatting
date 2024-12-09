@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.41
+// @version      v0.42
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -13,13 +13,13 @@
 (function () {
     'use strict';
 
-    // 创建右键菜单的容器
+    // createMenu
     const createMenu = (text, x, y) => {
-        // 如果菜单已存在，先移除
+        // remove existingMenu
         const existingMenu = document.getElementById('custom-context-menu');
         if (existingMenu) existingMenu.remove();
 
-        // 创建菜单容器
+        // create menu
         const menu = document.createElement('div');
         menu.id = 'custom-context-menu';
         menu.style.position = 'absolute';
@@ -32,17 +32,17 @@
         menu.style.zIndex = '9999';
         menu.style.fontSize = '14px';
 
-        // 定义菜单选项
+        // options
         const options = [
-            { label: '1. copy(text)', action: () => copyToClipboard(text) },
-            { label: '2. copy(fill)', action: () => copyToClipboard(`Filled: ${text}`) },
-            { label: '3. add$', action: () => copyToClipboard(`$${text}$`) },
-            { label: '4. sub$', action: () => copyToClipboard(`\\(${text}\\)`) },
-            { label: '5. $to$$', action: () => copyToClipboard(text.replace(/\$/g, '$$')) },
-            { label: '6. formula', action: () => copyToClipboard(`Formula: $$${text}$$`) },
+            { label: 'copy(text)', action: () => copyToClipboard(text) },
+            { label: 'copy(fill)', action: () => copyToClipboard(`Filled: ${text}`) },
+            { label: 'add$', action: () => copyToClipboard(`$${text}$`) },
+            { label: 'sub$', action: () => copyToClipboard(`\\(${text}\\)`) },
+            { label: '$to$$', action: () => copyToClipboard(text.replace(/\$/g, '$$')) },
+            { label: 'formula', action: () => copyToClipboard(`Formula: $$${text}$$`) },
         ];
 
-        // 动态添加菜单选项
+        // add menu
         options.forEach(opt => {
             const item = document.createElement('div');
             item.innerText = opt.label;
@@ -55,30 +55,26 @@
             menu.appendChild(item);
         });
 
-        // 点击其他地方时关闭菜单
         document.addEventListener('click', () => menu.remove(), { once: true });
 
-        // 将菜单添加到文档中
         document.body.appendChild(menu);
     };
 
-    // 将文本复制到剪贴板
+    // copy text to clipboard
     const copyToClipboard = text => {
         navigator.clipboard.writeText(text).then(() => {
             console.log(`Copied to clipboard: ${text}`);
         });
     };
 
-    // 监听鼠标松开事件
+    // listen mouse up event
     document.addEventListener('mouseup', event => {
         const selectedText = window.getSelection().toString().trim();
         if (selectedText) {
-            // 在鼠标位置显示菜单
             createMenu(selectedText, event.pageX, event.pageY);
         }
     });
 
-    // 日志提示脚本已加载
-    console.log('Latex_Automatic Formatting 脚本已加载，正在监听文本选中事件...');
+    console.log('Latex_Automatic Formatting : v0.42 Script Logged!');
 })();
 
