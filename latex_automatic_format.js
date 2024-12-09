@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.48
+// @version      v0.49
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -67,15 +67,17 @@
         });
     };
 
-    // listen mouse up event
-    document.addEventListener('mouseup', event => {
+    // block browser's default context menu
+    document.addEventListener('contextmenu', event => {
+        event.preventDefault(); // Disable the default right-click menu
         const selectedText = window.getSelection().toString().trim();
         if (selectedText) {
-            // Directly create the menu without waiting for right-click
+            // Create the custom menu at mouse position
             createMenu(selectedText, event.pageX, event.pageY);
             console.log(selectedText);
         }
     });
 
-    console.log('Latex_Automatic Formatting : v0.48 Script Updated!');
+    // log script initialization
+    console.log('Latex_Automatic Formatting : v0.49 Script Updated!');
 })();
