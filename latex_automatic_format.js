@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.44
+// @version      v0.45
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -15,7 +15,7 @@
 
     // createMenu
     const createMenu = (text, x, y) => {
-        // remove existing menu
+        // remove existingMenu
         const existingMenu = document.getElementById('custom-context-menu');
         if (existingMenu) existingMenu.remove();
 
@@ -27,7 +27,7 @@
         menu.style.left = `${x}px`;
         menu.style.background = '#fff';
         menu.style.border = '1px solid #ccc';
-        menu.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
+        menu.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)`;
         menu.style.padding = '10px';
         menu.style.zIndex = '9999';
         menu.style.fontSize = '14px';
@@ -67,19 +67,14 @@
         });
     };
 
-    // listen mouseup event
+    // listen mouse up event
     document.addEventListener('mouseup', event => {
         const selectedText = window.getSelection().toString().trim();
         if (selectedText) {
-            // 自动显示菜单
-            const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
-            const x = rect.right + window.scrollX;
-            const y = rect.bottom + window.scrollY;
-
-            // 创建菜单
-            createMenu(selectedText, x, y);
+            // Directly create the menu without waiting for right-click
+            createMenu(selectedText, event.pageX, event.pageY);
         }
     });
 
-    console.log('Latex_Automatic Formatting : v0.44 Script Logged!');
+    console.log('Latex_Automatic Formatting : v0.45 Script Updated!');
 })();
