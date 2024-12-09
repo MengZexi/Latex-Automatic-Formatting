@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.50
+// @version      v0.51
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -34,12 +34,12 @@
 
         // options
         const options = [
-            { label: 'copy(text)', action: () => copyToClipboard(text) },
-            { label: 'copy(fill)', action: () => copyToClipboard(`Filled: ${text}`) },
-            { label: 'add$', action: () => copyToClipboard(`$${text}$`) },
-            { label: 'sub$', action: () => copyToClipboard(`\\(${text}\\)`) },
-            { label: '$to$$', action: () => copyToClipboard(text.replace(/\$/g, '$$')) },
-            { label: 'formula', action: () => copyToClipboard(`Formula: $$${text}$$`) },
+            { label: 'copy(text)', action: () => copyToClipboard1(text) },
+            { label: 'copy(fill)', action: () => copyToClipboard2(text) },
+            { label: 'add$', action: () => copyToClipboard3(text) },
+            { label: 'sub$', action: () => copyToClipboard4(text) },
+            { label: '$to$$', action: () => copyToClipboard5(text) },
+            { label: 'formula', action: () => copyToClipboard6(text) },
         ];
 
         // add menu
@@ -72,9 +72,39 @@
     };
 
     // copy text to clipboard
-    const copyToClipboard = text => {
+    const copyToClipboard1 = text => {
         navigator.clipboard.writeText(text).then(() => {
-            console.log(`Copied to clipboard: ${text}`);
+            console.log(`1: ${text}`);
+        });
+    };
+
+    const copyToClipboard2 = text => {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log(`2: ${text}`);
+        });
+    };
+
+    const copyToClipboard3 = text => {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log(`3: ${text}`);
+        });
+    };
+
+    const copyToClipboard4 = text => {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log(`4: ${text}`);
+        });
+    };
+
+    const copyToClipboard5 = text => {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log(`5: ${text}`);
+        });
+    };
+
+    const copyToClipboard6 = text => {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log(`6: ${text}`);
         });
     };
 
@@ -90,5 +120,5 @@
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.50 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.51 Script Updated!');
 })();
