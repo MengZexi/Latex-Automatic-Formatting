@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.45
+// @version      v0.46
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -27,7 +27,7 @@
         menu.style.left = `${x}px`;
         menu.style.background = '#fff';
         menu.style.border = '1px solid #ccc';
-        menu.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)`;
+        menu.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
         menu.style.padding = '10px';
         menu.style.zIndex = '9999';
         menu.style.fontSize = '14px';
@@ -76,5 +76,5 @@
         }
     });
 
-    console.log('Latex_Automatic Formatting : v0.45 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.46 Script Updated!');
 })();
