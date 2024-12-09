@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.49
+// @version      v0.50
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -48,10 +48,21 @@
             item.innerText = opt.label;
             item.style.padding = '5px';
             item.style.cursor = 'pointer';
+            item.style.transition = 'background-color 0.2s ease';
+            
+            // Highlight on hover
+            item.addEventListener('mouseover', () => {
+                item.style.backgroundColor = '#f0f0f0'; // Highlight color
+            });
+            item.addEventListener('mouseout', () => {
+                item.style.backgroundColor = ''; // Reset to default
+            });
+
             item.addEventListener('click', () => {
                 opt.action();
                 menu.remove();
             });
+
             menu.appendChild(item);
         });
 
@@ -79,5 +90,5 @@
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.49 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.50 Script Updated!');
 })();
