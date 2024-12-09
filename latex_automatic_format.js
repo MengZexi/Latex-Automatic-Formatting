@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.42
+// @version      v0.44
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -15,7 +15,7 @@
 
     // createMenu
     const createMenu = (text, x, y) => {
-        // remove existingMenu
+        // remove existing menu
         const existingMenu = document.getElementById('custom-context-menu');
         if (existingMenu) existingMenu.remove();
 
@@ -67,14 +67,19 @@
         });
     };
 
-    // listen mouse up event
+    // listen mouseup event
     document.addEventListener('mouseup', event => {
         const selectedText = window.getSelection().toString().trim();
         if (selectedText) {
-            createMenu(selectedText, event.pageX, event.pageY);
+            // 自动显示菜单
+            const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+            const x = rect.right + window.scrollX;
+            const y = rect.bottom + window.scrollY;
+
+            // 创建菜单
+            createMenu(selectedText, x, y);
         }
     });
 
-    console.log('Latex_Automatic Formatting : v0.42 Script Logged!');
+    console.log('Latex_Automatic Formatting : v0.44 Script Logged!');
 })();
-
