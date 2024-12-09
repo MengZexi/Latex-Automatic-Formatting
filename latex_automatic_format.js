@@ -13,61 +13,17 @@
 (function() {
     'use strict';
 
-    // 定义标点转换的函数
-    function convertPunctuation(text) {
-        return text
-            .replace(/(?<=[^a-zA-Z0-9]) /g, '$\\underline { \\hspace{1cm} }$')
-            .replace(/,/g, ', ')
-            .replace(/\./g, '. ')
-            .replace(/，/g, ', ')
-            .replace(/。/g, '. ')
-            .replace(/&gt;/g, '>')
-            .replace(/&lt;/g, '<')
-            .replace(/λ/g, '$\\lambda$')
-            .replace(/α/g, '$\\alpha$')
-            .replace(/β/g, '$\\beta$')
-            .replace(/γ/g, '$\\gamma$')
-            .replace(/ρ/g, '$\\rho$')
-            .replace(/σ/g, '$\\sigma$')
-            .replace(/δ/g, '$\\delta$')
-            .replace(/φ/g, '$\\varphi$')
-            .replace(/：/g, ': ')
-            .replace(/⋯/g, '\\cdots')
-            .replace(/x,/g, '$x$,')
-            .replace(/\|/g, '\\vert')
-            .replace(/（/g, '(')
-            .replace(/）/g, ')')
-            .replace(/［/g, '[')
-            .replace(/］/g, ']')
-            .replace(/C02/g, '$CO_2$')
-            .replace(/H2O/g, '$H_2O$')
-            .replace(/CO2/g, '$CO_2$')
-            .replace(/H20/g, '$H_2O$')
-            .replace(/,,/g, ', ')
-            .replace(/\.\./g, '. ')
-            .replace(/, ,/g, ', ')
-            .replace(/\. \./g, '. ');
-    }
-
-    // 检测剪贴板复制事件并处理内容
-    document.addEventListener('copy', async function(event) {
-        try {
-            // 获取剪贴板内容
-            const clipboardText = await navigator.clipboard.readText();
-
-            // 处理剪贴板内容
-            const processedText = clipboardText
-                .split('\n')
-                .map(line => convertPunctuation(line))
-                .join('\n');
-
-            // 写回剪贴板
-            await navigator.clipboard.writeText(processedText);
-            console.log("Processed text written back to clipboard!");
-        } catch (error) {
-            console.error("Error processing clipboard text:", error);
+    // 监听鼠标松开事件
+    document.addEventListener('mouseup', () => {
+        // 获取选中的文本
+        const selectedText = window.getSelection().toString();
+        if (selectedText.trim()) {
+            // 如果存在选中的文本，输出到控制台
+            console.log('选中的文本:', selectedText);
         }
     });
 
-    console.log("Latex_Automatic Formatting script initialized!");
+    // 可选：在调试过程中加入提示
+    console.log('Latex_Automatic Formatting脚本已加载，正在监听文本选中事件...');
 })();
+
