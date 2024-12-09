@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.31
+// @version      v0.33
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
-// @match        *://*
+// @match        https://www.csdn.net/
 // @icon         https://www.latex-project.org/favicon.ico
 // @license      GNU GPLv3
 // @grant        none
