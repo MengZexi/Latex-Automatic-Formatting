@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.31
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        *://*
