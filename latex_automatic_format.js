@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.54
+// @version      v0.55
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -120,11 +120,18 @@
 
         const processedText = processText(text);
 
-        navigator.clipboard.writeText(processedText).then(() => {
-            console.log(`Processed text copied to clipboard: ${processedText}`);
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 如果支持 navigator.clipboard API
+            navigator.clipboard.writeText(processedText).then(() => {
+                console.log(`Copied using clipboard API: ${processedText}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(processedText); // 回退到兼容方法
+            });
+        } else {
+            // 使用后备方法
+            fallbackCopyText(processedText);
+        }
     };
 
     const copyToClipboard2 = text => {
@@ -176,11 +183,18 @@
 
         const processedText = processText(text);
 
-        navigator.clipboard.writeText(processedText).then(() => {
-            console.log(`Processed text copied to clipboard: ${processedText}`);
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 如果支持 navigator.clipboard API
+            navigator.clipboard.writeText(processedText).then(() => {
+                console.log(`Copied using clipboard API: ${processedText}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(processedText); // 回退到兼容方法
+            });
+        } else {
+            // 使用后备方法
+            fallbackCopyText(processedText);
+        }
     };
 
     const copyToClipboard3 = text => {
@@ -199,21 +213,48 @@
     };
 
     const copyToClipboard4 = text => {
-        navigator.clipboard.writeText(text).then(() => {
-            console.log(`4: ${text}`);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 如果支持 navigator.clipboard API
+            navigator.clipboard.writeText(text).then(() => {
+                console.log(`Copied using clipboard API: ${text}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(text); // 回退到兼容方法
+            });
+        } else {
+            // 使用后备方法
+            fallbackCopyText(text);
+        }
     };
 
     const copyToClipboard5 = text => {
-        navigator.clipboard.writeText(text).then(() => {
-            console.log(`5: ${text}`);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 如果支持 navigator.clipboard API
+            navigator.clipboard.writeText(text).then(() => {
+                console.log(`Copied using clipboard API: ${text}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(text); // 回退到兼容方法
+            });
+        } else {
+            // 使用后备方法
+            fallbackCopyText(text);
+        }
     };
 
     const copyToClipboard6 = text => {
-        navigator.clipboard.writeText(text).then(() => {
-            console.log(`6: ${text}`);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 如果支持 navigator.clipboard API
+            navigator.clipboard.writeText(text).then(() => {
+                console.log(`Copied using clipboard API: ${text}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(text); // 回退到兼容方法
+            });
+        } else {
+            // 使用后备方法
+            fallbackCopyText(text);
+        }
     };
     
     // 回退方法使用 document.execCommand('copy')
@@ -252,5 +293,5 @@
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.54 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.55 Script Updated!');
 })();
