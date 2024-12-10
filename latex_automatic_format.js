@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.57
+// @version      v0.58
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -36,8 +36,8 @@
         const options = [
             { label: 'copy(text)', action: () => copyToClipboard1(text) },
             { label: 'copy(fill)', action: () => copyToClipboard2(text) },
-            { label: 'add$', action: () => copyToClipboard3(text) },
-            { label: 'sub$', action: () => copyToClipboard4(text) },
+            { label: 'add$', action: () => copyToClipboard4(text) },
+            { label: 'sub$', action: () => copyToClipboard3(text) },
             { label: '$to$$', action: () => copyToClipboard5(text) },
             { label: 'formula', action: () => copyToClipboard6(text) },
         ];
@@ -206,6 +206,9 @@
             // 如果支持 navigator.clipboard API
             navigator.clipboard.writeText(text).then(() => {
                 console.log(`Copied using clipboard API: ${text}`);
+    
+                // 尝试触发粘贴操作
+                triggerPaste();
             }).catch(err => {
                 console.error('Clipboard API failed, falling back to execCommand.', err);
                 fallbackCopyText(text); // 回退到兼容方法
@@ -213,6 +216,9 @@
         } else {
             // 使用后备方法
             fallbackCopyText(text);
+    
+            // 尝试触发粘贴操作
+            triggerPaste();
         }
     };
     
@@ -239,7 +245,7 @@
     const copyToClipboard5 = text => {
         // 检测两端是否各有一个 $ 符号
         if (text.startsWith('$') && text.endsWith('$') && text.split('$').length === 3) {
-            text = `\n$$${text.slice(1, -1)}$$\n`; // 去掉单个 $ 并添加换行和两个 $ 符号
+            text = `\n$$\n${text.slice(1, -1)}\n$$\n`; // 去掉单个 $ 并添加换行和两个 $ 符号
         }
     
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -307,6 +313,20 @@
         }
     });
 
+    
+    // 自动触发粘贴操作的函数
+    const triggerPaste = () => {
+        const input = document.createElement('textarea'); // 创建一个隐藏的输入框
+        document.body.appendChild(input);
+        input.focus(); // 将焦点设置到输入框
+        document.execCommand('paste'); // 尝试执行粘贴操作
+        setTimeout(() => {
+            console.log('Pasted text:', input.value); // 输出粘贴的内容（测试用）
+            document.body.removeChild(input); // 移除临时输入框
+        }, 100); // 等待粘贴内容完成
+    };
+    
+
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.57 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.58 Script Updated!');
 })();
