@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.51
+// @version      v0.52
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        https://blog.csdn.net/*/article/details/*
@@ -73,8 +73,57 @@
 
     // copy text to clipboard
     const copyToClipboard1 = text => {
-        navigator.clipboard.writeText(text).then(() => {
-            console.log(`1: ${text}`);
+        const convertPunctuation = text => {
+            text = text.replace(/,/g, ', ');
+            text = text.replace(/\./g, '. ');
+            text = text.replace(/，/g, ', ');
+            text = text.replace(/。/g, '. ');
+            text = text.replace(/&gt;/g, '>');
+            text = text.replace(/&lt;/g, '<');
+            text = text.replace(/, \$/g, '$, ');
+            text = text.replace(/\. \$/g, '$. ');
+            text = text.replace(/λ/g, '$\\lambda$');
+            text = text.replace(/α/g, '$\\alpha$');
+            text = text.replace(/β/g, '$\\beta$');
+            text = text.replace(/γ/g, '$\\gamma$');
+            text = text.replace(/ρ/g, '$\\rho$');
+            text = text.replace(/σ/g, '$\\sigma$');
+            text = text.replace(/δ/g, '$\\delta$');
+            text = text.replace(/φ/g, '$\\varphi$');
+            text = text.replace(/：/g, ': ');
+            text = text.replace(/⋯/g, '\\cdots');
+            text = text.replace(/x,/g, '$x$,');
+            text = text.replace(/\|/g, '\\vert');
+            text = text.replace(/\. \$/g, '$. ');
+            text = text.replace(/, \$/g, '$, ');
+            text = text.replace(/,,/g, ', ');
+            text = text.replace(/\.\./g, '. ');
+            text = text.replace(/, ,/g, ', ');
+            text = text.replace(/\. \./g, '. ');
+            text = text.replace(/（/g, '(');
+            text = text.replace(/）/g, ')');
+            text = text.replace(/［/g, '[');
+            text = text.replace(/］/g, ']');
+            text = text.replace(/C02/g, '$CO_2$');
+            text = text.replace(/H2O/g, '$H_2O$');
+            text = text.replace(/CO2/g, '$CO_2$');
+            text = text.replace(/H20/g, '$H_2O$');
+            return text;
+        };
+
+        const processText = inputText => {
+            return inputText
+                .split('\n') // 按行分割
+                .map(line => convertPunctuation(line)) // 处理每行
+                .join('\n'); // 重新组合为文本
+        };
+
+        const processedText = processText(text);
+
+        navigator.clipboard.writeText(processedText).then(() => {
+            console.log(`Processed text copied to clipboard: ${processedText}`);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
         });
     };
 
@@ -115,10 +164,10 @@
         if (selectedText) {
             // Create the custom menu at mouse position
             createMenu(selectedText, event.pageX, event.pageY);
-            console.log(selectedText);
+            // console.log(selectedText);
         }
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.51 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.52 Script Updated!');
 })();
