@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.56
+// @version      v0.57
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -153,6 +153,7 @@
             text = text.replace(/σ/g, '$\\sigma$');
             text = text.replace(/δ/g, '$\\delta$');
             text = text.replace(/φ/g, '$\\varphi$');
+            text = text.replace(/π/g, '$\\pi$');
             text = text.replace(/：/g, ': ');
             text = text.replace(/⋯/g, '\\cdots');
             // text = text.replace(/x,/g, '$x$,');
@@ -198,6 +199,9 @@
     };
 
     const copyToClipboard3 = text => {
+        // 删除文本两端的 $ 符号
+        text = text.replace(/^\$|\$$/g, '');
+    
         if (navigator.clipboard && navigator.clipboard.writeText) {
             // 如果支持 navigator.clipboard API
             navigator.clipboard.writeText(text).then(() => {
@@ -211,8 +215,12 @@
             fallbackCopyText(text);
         }
     };
-
+    
     const copyToClipboard4 = text => {
+        // 检测并在两端添加 $ 符号
+        if (!text.startsWith('$')) text = `$${text}`;
+        if (!text.endsWith('$')) text = `${text}$`;
+    
         if (navigator.clipboard && navigator.clipboard.writeText) {
             // 如果支持 navigator.clipboard API
             navigator.clipboard.writeText(text).then(() => {
@@ -226,8 +234,14 @@
             fallbackCopyText(text);
         }
     };
+    
 
     const copyToClipboard5 = text => {
+        // 检测两端是否各有一个 $ 符号
+        if (text.startsWith('$') && text.endsWith('$') && text.split('$').length === 3) {
+            text = `\n$$${text.slice(1, -1)}$$\n`; // 去掉单个 $ 并添加换行和两个 $ 符号
+        }
+    
         if (navigator.clipboard && navigator.clipboard.writeText) {
             // 如果支持 navigator.clipboard API
             navigator.clipboard.writeText(text).then(() => {
@@ -241,6 +255,7 @@
             fallbackCopyText(text);
         }
     };
+    
 
     const copyToClipboard6 = text => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -293,5 +308,5 @@
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.56 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.57 Script Updated!');
 })();
