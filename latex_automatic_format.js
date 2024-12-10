@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.53
+// @version      v0.54
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -184,9 +184,18 @@
     };
 
     const copyToClipboard3 = text => {
-        navigator.clipboard.writeText(text).then(() => {
-            console.log(`3: ${text}`);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // 如果支持 navigator.clipboard API
+            navigator.clipboard.writeText(text).then(() => {
+                console.log(`Copied using clipboard API: ${text}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(text); // 回退到兼容方法
+            });
+        } else {
+            // 使用后备方法
+            fallbackCopyText(text);
+        }
     };
 
     const copyToClipboard4 = text => {
@@ -206,7 +215,31 @@
             console.log(`6: ${text}`);
         });
     };
-
+    
+    // 回退方法使用 document.execCommand('copy')
+    const fallbackCopyText = text => {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed'; // 避免页面跳动
+        textArea.style.opacity = '0'; // 隐藏文本框
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+    
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                console.log(`Copied using fallback method: ${text}`);
+            } else {
+                console.error('Fallback method failed.');
+            }
+        } catch (err) {
+            console.error('Fallback method error:', err);
+        }
+    
+        document.body.removeChild(textArea);
+    };
+    
     // block browser's default context menu
     document.addEventListener('contextmenu', event => {
         event.preventDefault(); // Disable the default right-click menu
@@ -219,5 +252,5 @@
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.53 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.54 Script Updated!');
 })();
