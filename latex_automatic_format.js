@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.55
+// @version      v0.56
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -92,7 +92,7 @@
             text = text.replace(/φ/g, '$\\varphi$');
             text = text.replace(/：/g, ': ');
             text = text.replace(/⋯/g, '\\cdots');
-            text = text.replace(/x,/g, '$x$,');
+            // text = text.replace(/x,/g, '$x$,');
             text = text.replace(/\|/g, '\\vert');
             text = text.replace(/\. \$/g, '$. ');
             text = text.replace(/, \$/g, '$, ');
@@ -155,7 +155,7 @@
             text = text.replace(/φ/g, '$\\varphi$');
             text = text.replace(/：/g, ': ');
             text = text.replace(/⋯/g, '\\cdots');
-            text = text.replace(/x,/g, '$x$,');
+            // text = text.replace(/x,/g, '$x$,');
             text = text.replace(/\|/g, '\\vert');
             text = text.replace(/\. \$/g, '$. ');
             text = text.replace(/, \$/g, '$, ');
@@ -293,5 +293,5 @@
     });
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.55 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.56 Script Updated!');
 })();
