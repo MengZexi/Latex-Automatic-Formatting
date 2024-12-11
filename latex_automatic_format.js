@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.61
+// @version      v0.62
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -73,6 +73,15 @@
         document.body.appendChild(menu);
     };
 
+    // 示例绑定右键事件
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const targetElement = e.target;
+
+        if (targetElement && (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA')) {
+            createMenu('', e.clientX, e.clientY, targetElement);
+        }
+    });
 
     // copy text to clipboard
     const copyToClipboard1 = text => {
@@ -290,5 +299,5 @@
     
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.61 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.62 Script Updated!');
 })();
