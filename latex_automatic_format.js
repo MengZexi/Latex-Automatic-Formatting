@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.59
+// @version      v0.60
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -150,9 +150,18 @@
     const copyToClipboard2 = () => {
         const placeholder = '$\\underline { \\hspace{1cm} }$';
     
-        // 获取当前活动的输入框或文本区域
-        const activeElement = document.activeElement;
+        // 尝试获取当前活动的输入框或文本区域
+        let activeElement = document.activeElement;
     
+        // 如果当前活动元素不是输入框或文本区域，尝试找到一个默认的输入框并聚焦
+        if (!(activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT'))) {
+            activeElement = document.querySelector('textarea, input');
+            if (activeElement) {
+                activeElement.focus(); // 强制聚焦
+            }
+        }
+    
+        // 检查是否成功找到输入框
         if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
             const start = activeElement.selectionStart;
             const end = activeElement.selectionEnd;
@@ -169,9 +178,10 @@
     
             console.log(`Inserted placeholder into input/textarea: ${placeholder}`);
         } else {
-            console.error('No active input or textarea to insert placeholder.');
+            console.error('No input or textarea found to insert placeholder.');
         }
     };
+    
     
 
     const copyToClipboard3 = text => {
@@ -303,5 +313,5 @@
     
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.59 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.60 Script Updated!');
 })();
