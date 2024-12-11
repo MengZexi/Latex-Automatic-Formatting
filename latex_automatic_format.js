@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.60
+// @version      v0.61
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -10,77 +10,68 @@
 // @grant        none
 // ==/UserScript==
 
-    (function () {
-        'use strict';
+(function () {
+    'use strict';
 
-        // createMenu
-        const createMenu = (text, x, y) => {
-            // remove existingMenu
-            const existingMenu = document.getElementById('custom-context-menu');
-            if (existingMenu) existingMenu.remove();
-
-            // create menu
-            const menu = document.createElement('div');
-            menu.id = 'custom-context-menu';
-            menu.style.position = 'absolute';
-            menu.style.top = `${y}px`;
-            menu.style.left = `${x}px`;
-            menu.style.background = '#fff';
-            menu.style.border = '1px solid #ccc';
-            menu.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
-            menu.style.padding = '10px';
-            menu.style.zIndex = '9999';
-            menu.style.fontSize = '14px';
-
-            // Detect selected text
-            const selectedText = window.getSelection().toString().trim();
-
-            // options
-            const options = selectedText
-                ? [
-                    { label: 'copy(text)', action: () => copyToClipboard1(selectedText) },
-                    { label: 'add$', action: () => copyToClipboard4(selectedText) },
-                    { label: 'sub$', action: () => copyToClipboard3(selectedText) },
-                    { label: '$to$$', action: () => copyToClipboard5(selectedText) },
-                    { label: 'formula', action: () => copyToClipboard6(selectedText) },
-                ]
-                : [{ label: 'fill', action: () => copyToClipboard2() }];
-
-            // add menu
-            options.forEach(opt => {
-                const item = document.createElement('div');
-                item.innerText = opt.label;
-                item.style.padding = '5px';
-                item.style.cursor = 'pointer';
-                item.style.transition = 'background-color 0.2s ease';
-
-                // Highlight on hover
-                item.addEventListener('mouseover', () => {
-                    item.style.backgroundColor = '#f0f0f0'; // Highlight color
-                });
-                item.addEventListener('mouseout', () => {
-                    item.style.backgroundColor = ''; // Reset to default
-                });
-
-                item.addEventListener('click', () => {
-                    opt.action();
-                    menu.remove();
-                });
-
-                menu.appendChild(item);
+    const createMenu = (text, x, y, targetElement) => {
+        // remove existingMenu
+        const existingMenu = document.getElementById('custom-context-menu');
+        if (existingMenu) existingMenu.remove();
+    
+        // create menu
+        const menu = document.createElement('div');
+        menu.id = 'custom-context-menu';
+        menu.style.position = 'absolute';
+        menu.style.top = `${y}px`;
+        menu.style.left = `${x}px`;
+        menu.style.background = '#fff';
+        menu.style.border = '1px solid #ccc';
+        menu.style.boxShadow = '0px 2px 5px rgba(0,0,0,0.3)';
+        menu.style.padding = '10px';
+        menu.style.zIndex = '9999';
+        menu.style.fontSize = '14px';
+    
+        // Check if text is selected
+        const options = text.trim() === ''
+            ? [
+                { label: 'fill', action: () => copyToClipboard2(targetElement, x, y) }
+            ]
+            : [
+                { label: 'copy(text)', action: () => copyToClipboard1(text) },
+                { label: 'add$', action: () => copyToClipboard4(text) },
+                { label: 'sub$', action: () => copyToClipboard3(text) },
+                { label: '$to$$', action: () => copyToClipboard5(text) },
+                { label: 'formula', action: () => copyToClipboard6(text) },
+            ];
+    
+        // add menu
+        options.forEach(opt => {
+            const item = document.createElement('div');
+            item.innerText = opt.label;
+            item.style.padding = '5px';
+            item.style.cursor = 'pointer';
+            item.style.transition = 'background-color 0.2s ease';
+    
+            // Highlight on hover
+            item.addEventListener('mouseover', () => {
+                item.style.backgroundColor = '#f0f0f0'; // Highlight color
             });
-
-            document.addEventListener('click', () => menu.remove(), { once: true });
-
-            document.body.appendChild(menu);
-        };
-
-        // Event listener to trigger menu on right-click
-        document.addEventListener('contextmenu', e => {
-            e.preventDefault();
-            const text = window.getSelection().toString().trim();
-            createMenu(text, e.pageX, e.pageY);
+            item.addEventListener('mouseout', () => {
+                item.style.backgroundColor = ''; // Reset to default
+            });
+    
+            item.addEventListener('click', () => {
+                opt.action();
+                menu.remove();
+            });
+    
+            menu.appendChild(item);
         });
+    
+        document.addEventListener('click', () => menu.remove(), { once: true });
+    
+        document.body.appendChild(menu);
+    };
 
 
     // copy text to clipboard
@@ -100,7 +91,6 @@
             text = text.replace(/γ/g, '$\\gamma$');
             text = text.replace(/ρ/g, '$\\rho$');
             text = text.replace(/σ/g, '$\\sigma$');
-            text = text.replace(/θ/g, '$\\sigma$');
             text = text.replace(/δ/g, '$\\delta$');
             text = text.replace(/φ/g, '$\\varphi$');
             text = text.replace(/：/g, ': ');
@@ -147,42 +137,28 @@
         }
     };
 
-    const copyToClipboard2 = () => {
-        const placeholder = '$\\underline { \\hspace{1cm} }$';
+    const copyToClipboard2 = (targetElement, mouseX, mouseY) => {
+        const insertAtCursor = (input, textToInsert, position) => {
+            const start = position;
+            const currentValue = input.value;
     
-        // 尝试获取当前活动的输入框或文本区域
-        let activeElement = document.activeElement;
+            // 插入内容
+            input.value = currentValue.slice(0, start) + textToInsert + currentValue.slice(start);
     
-        // 如果当前活动元素不是输入框或文本区域，尝试找到一个默认的输入框并聚焦
-        if (!(activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT'))) {
-            activeElement = document.querySelector('textarea, input');
-            if (activeElement) {
-                activeElement.focus(); // 强制聚焦
-            }
-        }
+            // 更新光标位置
+            input.selectionStart = input.selectionEnd = start + textToInsert.length;
     
-        // 检查是否成功找到输入框
-        if (activeElement && (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT')) {
-            const start = activeElement.selectionStart;
-            const end = activeElement.selectionEnd;
-            const currentValue = activeElement.value;
+            // 聚焦到输入框
+            input.focus();
+        };
     
-            // 在光标位置插入占位符
-            activeElement.value = currentValue.slice(0, start) + placeholder + currentValue.slice(end);
-    
-            // 将光标移动到占位符后
-            activeElement.selectionStart = activeElement.selectionEnd = start + placeholder.length;
-    
-            // 触发输入事件，确保应用绑定的事件监听器能够响应
-            activeElement.dispatchEvent(new Event('input'));
-    
-            console.log(`Inserted placeholder into input/textarea: ${placeholder}`);
+        if (targetElement && (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA')) {
+            const position = targetElement.selectionStart; // 获取光标位置
+            insertAtCursor(targetElement, '$\\underline { \\hspace{1cm} }$', position);
         } else {
-            console.error('No input or textarea found to insert placeholder.');
+            console.error('No input or textarea element targeted. Cannot insert text.');
         }
-    };
-    
-    
+    };   
 
     const copyToClipboard3 = text => {
         // 删除文本两端的 $ 符号
@@ -229,8 +205,10 @@
     
 
     const copyToClipboard5 = text => {
-        // 删除文本中的所有 $ 符号
-        text = text.replace(/\$/g, '');
+        // 检测两端是否各有一个 $ 符号
+        if (text.startsWith('$') && text.endsWith('$') && text.split('$').length === 3) {
+            text = `\n$$\n${text.slice(1, -1)}\n$$\n`; // 去掉单个 $ 并添加换行和两个 $ 符号
+        }
     
         if (navigator.clipboard && navigator.clipboard.writeText) {
             // 如果支持 navigator.clipboard API
@@ -245,7 +223,6 @@
             fallbackCopyText(text);
         }
     };
-    
     
 
     const copyToClipboard6 = text => {
@@ -313,5 +290,5 @@
     
 
     // log script initialization
-    console.log('Latex_Automatic Formatting : v0.60 Script Updated!');
+    console.log('Latex_Automatic Formatting : v0.61 Script Updated!');
 })();
