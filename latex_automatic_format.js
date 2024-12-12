@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.59
+// @version      v0.70
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -153,29 +153,37 @@ const copyToClipboard1 = text => {
     }
 };
 
-const copyToClipboard2 = TextArea => {
-    const underline = '$\\underline { \\hspace{1cm} }$';
+    const copyToClipboard2 = TextArea => {
+        const underline = '$\\underline { \\hspace{1cm} }$';
 
-    const start = TextArea.selectionStart;
-    const end = TextArea.selectionEnd;
-    const currentValue = TextArea.value;
+        const start = TextArea.selectionStart; // 获取当前光标位置
 
-    if (TextArea) {
-        TextArea.value = currentValue.slice(0, start) + underline + currentValue.slice(end);
-        setTimeout(() => TextArea.dispatchEvent(new Event('input', { bubbles: true })), 10);
+        // 在光标位置插入占位符
+        // const currentValue = TextArea.value;
+        // TextArea.value = currentValue.slice(0, start) + underline + currentValue.slice(start);
 
-    }
-    // 在光标位置插入占位符
-    //const inputEvent = new Event('input');
+        // 让文本框获得焦点并将光标移动到插入占位符后的位置
+        TextArea.focus();
+        TextArea.selectionStart = TextArea.selectionEnd = start;
 
-    // 更新文本框的内容
-    //TextArea.value = currentValue.slice(0, start) + underline + currentValue.slice(end);
+        // 触发输入事件（视需求保留）
+        // setTimeout(() => TextArea.dispatchEvent(new Event('input', { bubbles: true })), 10);
 
-    // 触发输入事件
-    //TextArea.dispatchEvent(inputEvent);
+        // 将内容复制到剪贴板
+        const processedText = underline;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(processedText).then(() => {
+                console.log(`Copied using clipboard API: ${processedText}`);
+            }).catch(err => {
+                console.error('Clipboard API failed, falling back to execCommand.', err);
+                fallbackCopyText(processedText); // 回退到兼容方法
+            });
+        } else {
+            fallbackCopyText(processedText);
+        }
+    };
 
-    console.log(`Inserted underline into input/textarea: ${underline}`);
-};
+
 
 
 const copyToClipboard3 = text => {
