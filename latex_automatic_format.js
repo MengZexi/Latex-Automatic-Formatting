@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.70
+// @version      v0.71
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -34,22 +34,22 @@
 
         // Detect selected text
         const selectedText = window.getSelection().toString().trim();
-        const activeElement = document.activeElement; // 当前活动的元素
+        const activeElement = document.activeElement;               // current active element is input textarea
 
         if (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') {
-            console.log('鼠标所在的文本框：', activeElement);
+            console.log('Mouse in the text box:', activeElement);
         } else {
-            console.log('鼠标没有在文本框中。');
+            console.log('Mouse is not in the text box. ');
         }
 
         // options
         const options = selectedText
             ? [
                 { label: 'copy(text)', action: () => copyToClipboard1(selectedText) },
-                { label: 'add$', action: () => copyToClipboard4(selectedText) },
-                { label: 'sub$', action: () => copyToClipboard3(selectedText) },
-                { label: '$to$$', action: () => copyToClipboard5(selectedText) },
-                { label: 'formula', action: () => copyToClipboard6(selectedText) },
+                { label: 'add$', action: () => copyToClipboard3(selectedText, activeElement) },
+                { label: 'sub$', action: () => copyToClipboard4(selectedText, activeElement) },
+                { label: '$to$$', action: () => copyToClipboard5(selectedText, activeElement) },
+                { label: 'formula', action: () => copyToClipboard6(selectedText, activeElement) },
             ]
             : [{ label: 'fill', action: () => copyToClipboard2(activeElement) }];
 
@@ -92,6 +92,11 @@
 // copy text to clipboard
 const copyToClipboard1 = text => {
     const convertPunctuation = text => {
+        // Chinese symbol to English symbol
+        // Mathematical letters changed to latex format
+        // Chemical formula changed to Latex format
+        // Punctuation symbol
+        // Increment formula sign
         text = text.replace(/,/g, ', ');
         text = text.replace(/\./g, '. ');
         text = text.replace(/，/g, ', ');
@@ -132,89 +137,214 @@ const copyToClipboard1 = text => {
 
     const processText = inputText => {
         return inputText
-            .split('\n') // 按行分割
-            .map(line => convertPunctuation(line)) // 处理每行
-            .join('\n'); // 重新组合为文本
+            .split('\n')                            // Split by line
+            .map(line => convertPunctuation(line))  // Process each row
+            .join('\n');                            // Reassemble as text
     };
 
     const processedText = processText(text);
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        // 如果支持 navigator.clipboard API
-        navigator.clipboard.writeText(processedText).then(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {   
+        navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
             console.log(`Copied using clipboard API: ${processedText}`);
         }).catch(err => {
             console.error('Clipboard API failed, falling back to execCommand.', err);
-            fallbackCopyText(processedText); // 回退到兼容方法
+            fallbackCopyText(processedText);                                        // Fall back to the compatible method
         });
     } else {
-        // 使用后备方法
-        fallbackCopyText(processedText);
+        fallbackCopyText(processedText);                                            // Use the backup method
     }
 };
 
-    const copyToClipboard2 = TextArea => {
+const copyToClipboard2 = (text, TextArea) => {
         const underline = '$\\underline { \\hspace{1cm} }$';
 
-        const start = TextArea.selectionStart; // 获取当前光标位置
+        const start = TextArea.selectionStart;
+        const end = TextArea.selectionEnd;
 
-        // 在光标位置插入占位符
-        // const currentValue = TextArea.value;
-        // TextArea.value = currentValue.slice(0, start) + underline + currentValue.slice(start);
-
-        // 让文本框获得焦点并将光标移动到插入占位符后的位置
-        TextArea.focus();
-        TextArea.selectionStart = TextArea.selectionEnd = start;
-
-        // 触发输入事件（视需求保留）
-        // setTimeout(() => TextArea.dispatchEvent(new Event('input', { bubbles: true })), 10);
-
-        // 将内容复制到剪贴板
-        const processedText = underline;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(processedText).then(() => {
+        const processedText = underline;                                                // Copy content to clipboard
+        if (navigator.clipboard && navigator.clipboard.writeText) {   
+            navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
                 console.log(`Copied using clipboard API: ${processedText}`);
             }).catch(err => {
                 console.error('Clipboard API failed, falling back to execCommand.', err);
-                fallbackCopyText(processedText); // 回退到兼容方法
+                fallbackCopyText(processedText);                                        // Fall back to the compatible method
             });
         } else {
-            fallbackCopyText(processedText);
+            fallbackCopyText(processedText);                                            // Use the backup method
         }
+
+        TextArea.selectionStart = start;
+        TextArea.selectionEnd = end;
+        TextArea.focus();                                                               // Make sure the text box is in focus
     };
 
 
+const copyToClipboard3 = (text, TextArea) => {
 
+    const start = TextArea.selectionStart;          // Save the currently selected text location
+    const end = TextArea.selectionEnd;
 
-const copyToClipboard3 = text => {
-    // 删除文本两端的 $ 符号
-    text = text.replace(/^\$|\$$/g, '');
-};
-
-const copyToClipboard4 = text => {
-    // 检测并在两端添加 $ 符号
-    if (!text.startsWith('$')) text = `$${text}`;
+    if (!text.startsWith('$')) text = `$${text}`;   // Detects and adds $signs to both ends
     if (!text.endsWith('$')) text = `${text}$`;
+
+    const processedText = text;                                                     // Copy content to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {   
+        navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
+            console.log(`Copied using clipboard API: ${processedText}`);
+        }).catch(err => {
+            console.error('Clipboard API failed, falling back to execCommand.', err);
+            fallbackCopyText(processedText);                                        // Fall back to the compatible method
+        });
+    } else {
+        fallbackCopyText(processedText);                                            // Use the backup method
+    }
+
+    TextArea.selectionStart = start;
+    TextArea.selectionEnd = end;
+    TextArea.focus();                                                               // Make sure the text box is in focus
+
+    // console.log(`Processed text: ${text}`);
 };
 
 
-const copyToClipboard5 = text => {
-    // 删除文本中的所有 $ 符号
-    text = text.replace(/\$/g, '');
+const copyToClipboard4 = (text, TextArea) => {
+
+    const start = TextArea.selectionStart;          // Save the currently selected text location
+    const end = TextArea.selectionEnd;
+
+    text = text.replace(/\$/g, '');                 // Delete all $signs from the text
+
+    const processedText = text;                                                     // Copy content to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {   
+        navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
+            console.log(`Copied using clipboard API: ${processedText}`);
+        }).catch(err => {
+            console.error('Clipboard API failed, falling back to execCommand.', err);
+            fallbackCopyText(processedText);                                        // Fall back to the compatible method
+        });
+    } else {
+        fallbackCopyText(processedText);                                            // Use the backup method
+    }
+
+    TextArea.selectionStart = start;
+    TextArea.selectionEnd = end;
+    TextArea.focus();                                                               // Make sure the text box is in focus
+};
+
+
+const copyToClipboard5 = (text, TextArea) => {
+
+    const start = TextArea.selectionStart;              // Save the currently selected text location
+    const end = TextArea.selectionEnd;
+
+    text = text.replace(/^\$|\$$/g, match => `\n$$\n`); // If there is $on both ends, replace it with a line feed
+
+    if (!text.startsWith('\n$$\n')) {                   // If there is no $, add a newline $$newline at both ends
+        text = `\n$$\n${text}`;
+    }
+    if (!text.endsWith('\n$$\n')) {
+        text = `${text}\n$$\n`;
+    }
+
+    const processedText = text;                                                     // Copy content to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {   
+        navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
+            console.log(`Copied using clipboard API: ${processedText}`);
+        }).catch(err => {
+            console.error('Clipboard API failed, falling back to execCommand.', err);
+            fallbackCopyText(processedText);                                        // Fall back to the compatible method
+        });
+    } else {
+        fallbackCopyText(processedText);                                            // Use the backup method
+    }
+
+    TextArea.selectionStart = start;
+    TextArea.selectionEnd = end;
+    TextArea.focus();
 };
 
 
 
-const copyToClipboard6 = text => {
+const copyToClipboard6 = (text, TextArea) => {
 
+    const start = TextArea.selectionStart;              // Save the currently selected text location
+    const end = TextArea.selectionEnd;
+
+    const completeLatexFormula = (text) => {            // Complete missing parentheses and special structures in LaTeX formulas
+        if (!text.startsWith('$')) {                    // Make sure there are separate $at both ends
+            text = `$${text}`;
+        }
+        if (!text.endsWith('$')) {
+            text = `${text}$`;
+        }
+        let stack = [];                                 // The initialization stack is used for bracket matching
+        let result = "";
+        const specialCommands = ['\\frac', '\\sqrt', '\\overline', '\\underline'];          // LaTeX Commands that require parameter completion
+        for (let i = 0; i < text.length; i++) {                                             // Iterate through the string
+            const char = text[i];
+            if (char === '\\') {                                                                        // Detect special commands
+                const command = specialCommands.find(cmd => text.slice(i, i + cmd.length) === cmd);     // Get the command name
+                if (command) {
+                    result += command;
+                    i += command.length - 1;
+                    if (command === '\\frac') {                                             // Complete the required parameters of the command
+                        let nextChar = text[i + 1] || '';
+                        if (nextChar !== '{') {
+                            result += '{?}';                                                // Complete the molecular placeholder
+                        }
+                        if (!text.slice(i + 1).includes('}') || text.slice(i + 1).indexOf('}') > text.slice(i + 1).indexOf('{')) {
+                            result += '{}';                                                 // Complete the denominator placeholder
+                        }
+                    } else {
+                        let nextChar = text[i + 1] || '';
+                        if (nextChar !== '{') {
+                            result += '{?}';                                                // Placeholder
+                        }
+                    }
+                    continue;
+                }
+            }
+            if (char === '{') {                                                             // Regular bracket matching
+                stack.push('{');
+            } else if (char === '}') {
+                if (stack.length > 0 && stack[stack.length - 1] === '{') {
+                    stack.pop();
+                } else {
+                    result += '{';                                                          // Complete the missing left parenthesis
+                }
+            }
+            result += char;
+        }
+        while (stack.length > 0) {                                                          // Complete the unmatched left parenthesis
+            result += '}';
+            stack.pop();
+        }
+        return result;
+    };
+    const processedText = completeLatexFormula(text);                                       // LaTeX completion of the input text
+    if (navigator.clipboard && navigator.clipboard.writeText) {   
+        navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
+            console.log(`Copied using clipboard API: ${processedText}`);
+        }).catch(err => {
+            console.error('Clipboard API failed, falling back to execCommand.', err);
+            fallbackCopyText(processedText);                                        // Fall back to the compatible method
+        });
+    } else {
+        fallbackCopyText(processedText);                                            // Use the backup method
+    }
+
+    TextArea.selectionStart = start;
+    TextArea.selectionEnd = end;
+    TextArea.focus();
 };
 
-// 回退方法使用 document.execCommand('copy')
+// The rollback method uses document.execCommand('copy')
 const fallbackCopyText = text => {
     const textArea = document.createElement('textarea');
     textArea.value = text;
-    textArea.style.position = 'fixed'; // 避免页面跳动
-    textArea.style.opacity = '0'; // 隐藏文本框
+    textArea.style.position = 'fixed';                                              // Avoid page jumping
+    textArea.style.opacity = '0';                                                   // Hide the text box
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -233,17 +363,6 @@ const fallbackCopyText = text => {
     document.body.removeChild(textArea);
 };
 
-// block browser's default context menu
-//document.addEventListener('contextmenu', event => {
- //   event.preventDefault(); // Disable the default right-click menu
-//    const selectedText = window.getSelection().toString().trim();
-//    if (selectedText) {
-        // Create the custom menu at mouse position
-//        createMenu(selectedText, event.pageX, event.pageY);
-        // console.log(selectedText);
-//    }
-// });
-
 // log script initialization
-console.log('Latex_Automatic Formatting : v0.59 Script Updated!');
+console.log('Latex_Automatic Formatting : v0.71 Script Updated!');
 })();
