@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.71
+// @version      v0.73
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -97,6 +97,7 @@ const copyToClipboard1 = text => {
         // Chemical formula changed to Latex format
         // Punctuation symbol
         // Increment formula sign
+        // 选项变为多行选项
         text = text.replace(/,/g, ', ');
         text = text.replace(/\./g, '. ');
         text = text.replace(/，/g, ', ');
@@ -156,7 +157,7 @@ const copyToClipboard1 = text => {
     }
 };
 
-const copyToClipboard2 = (text, TextArea) => {
+const copyToClipboard2 = (TextArea) => {
         const underline = '$\\underline { \\hspace{1cm} }$';
 
         const start = TextArea.selectionStart;
@@ -177,7 +178,7 @@ const copyToClipboard2 = (text, TextArea) => {
         TextArea.selectionStart = start;
         TextArea.selectionEnd = end;
         TextArea.focus();                                                               // Make sure the text box is in focus
-    };
+};
 
 
 const copyToClipboard3 = (text, TextArea) => {
@@ -390,5 +391,5 @@ const fallbackCopyText = text => {
 };
 
 // log script initialization
-console.log('Latex_Automatic Formatting : v0.71 Script Updated!');
+console.log('Latex_Automatic Formatting : v0.73 Script Updated!');
 })();
