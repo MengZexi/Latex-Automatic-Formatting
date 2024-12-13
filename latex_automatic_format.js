@@ -264,80 +264,106 @@ const copyToClipboard5 = (text, TextArea) => {
     TextArea.focus();
 };
 
-
-
 const copyToClipboard6 = (text, TextArea) => {
+    const start = TextArea.selectionStart; // Save the current selection start position
+    const end = TextArea.selectionEnd; // Save the current selection end position
 
-    const start = TextArea.selectionStart;              // Save the currently selected text location
-    const end = TextArea.selectionEnd;
-
-    const completeLatexFormula = (text) => {            // Complete missing parentheses and special structures in LaTeX formulas
-        if (!text.startsWith('$')) {                    // Make sure there are separate $at both ends
+    // Function to complete LaTeX formulas by adding missing brackets and parameters
+    const completeLatexFormula = (text) => {
+        // Ensure the formula starts and ends with $
+        if (!text.startsWith('$')) {
             text = `$${text}`;
         }
         if (!text.endsWith('$')) {
             text = `${text}$`;
         }
-        let stack = [];                                 // The initialization stack is used for bracket matching
+
+        // Remove the outer $ symbols for internal processing
+        let content = text.slice(1, -1);
+
+        // Initialize a stack for matching brackets
+        let stack = [];
         let result = "";
-        const specialCommands = ['\\frac', '\\sqrt', '\\overline', '\\underline'];          // LaTeX Commands that require parameter completion
-        for (let i = 0; i < text.length; i++) {                                             // Iterate through the string
-            const char = text[i];
-            if (char === '\\') {                                                                        // Detect special commands
-                const command = specialCommands.find(cmd => text.slice(i, i + cmd.length) === cmd);     // Get the command name
+
+        // List of LaTeX commands that require parameter completion
+        const specialCommands = ['\\frac', '\\sqrt', '\\overline', '\\underline'];
+
+        // Iterate through the string content
+        for (let i = 0; i < content.length; i++) {
+            const char = content[i];
+
+            // Detect special commands
+            if (char === '\\') {
+                // Identify the command name
+                const command = specialCommands.find(cmd => content.slice(i, i + cmd.length) === cmd);
                 if (command) {
                     result += command;
                     i += command.length - 1;
-                    if (command === '\\frac') {                                             // Complete the required parameters of the command
-                        let nextChar = text[i + 1] || '';
+
+                    // Handle parameter completion for the command
+                    if (command === '\\frac') {
+                        let nextChar = content[i + 1] || '';
                         if (nextChar !== '{') {
-                            result += '{?}';                                                // Complete the molecular placeholder
+                            result += '{?}'; // Add placeholder for the numerator
                         }
-                        if (!text.slice(i + 1).includes('}') || text.slice(i + 1).indexOf('}') > text.slice(i + 1).indexOf('{')) {
-                            result += '{}';                                                 // Complete the denominator placeholder
+                        if (!content.slice(i + 1).includes('}') || content.slice(i + 1).indexOf('}') > content.slice(i + 1).indexOf('{')) {
+                            result += '{}'; // Add placeholder for the denominator
                         }
                     } else {
-                        let nextChar = text[i + 1] || '';
+                        let nextChar = content[i + 1] || '';
                         if (nextChar !== '{') {
-                            result += '{?}';                                                // Placeholder
+                            result += '{?}'; // Add placeholder
                         }
                     }
                     continue;
                 }
             }
-            if (char === '{') {                                                             // Regular bracket matching
-                stack.push('{');
+
+            // Regular bracket matching
+            if (char === '{') {
+                stack.push(result.length); // Save the position of the opening bracket
             } else if (char === '}') {
-                if (stack.length > 0 && stack[stack.length - 1] === '{') {
-                    stack.pop();
+                if (stack.length > 0) {
+                    stack.pop(); // Match the last unmatched opening bracket
                 } else {
-                    result += '{';                                                          // Complete the missing left parenthesis
+                    result += '{'; // Add a missing opening bracket immediately before the unmatched closing bracket
                 }
             }
+
             result += char;
         }
-        while (stack.length > 0) {                                                          // Complete the unmatched left parenthesis
-            result += '}';
-            stack.pop();
+
+        // Add closing brackets for unmatched opening brackets
+        while (stack.length > 0) {
+            const position = stack.pop();
+            result = result.slice(0, position + 1) + '}' + result.slice(position + 1); // Insert the closing bracket after the unmatched opening bracket
         }
-        return result;
+
+        // Re-add the outer $ symbols
+        return `$${result}$`;
     };
-    const processedText = completeLatexFormula(text);                                       // LaTeX completion of the input text
-    if (navigator.clipboard && navigator.clipboard.writeText) {   
-        navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
+
+    // Complete the LaTeX formula from the input text
+    const processedText = completeLatexFormula(text);
+
+    // Copy the processed text to the clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(processedText).then(() => {
             console.log(`Copied using clipboard API: ${processedText}`);
         }).catch(err => {
             console.error('Clipboard API failed, falling back to execCommand.', err);
-            fallbackCopyText(processedText);                                        // Fall back to the compatible method
+            fallbackCopyText(processedText); // Fallback to a compatible method
         });
     } else {
-        fallbackCopyText(processedText);                                            // Use the backup method
+        fallbackCopyText(processedText); // Use a backup method
     }
 
+    // Restore the original selection in the text area
     TextArea.selectionStart = start;
     TextArea.selectionEnd = end;
-    TextArea.focus();
+    TextArea.focus(); // Ensure the text area regains focus
 };
+
 
 // The rollback method uses document.execCommand('copy')
 const fallbackCopyText = text => {
