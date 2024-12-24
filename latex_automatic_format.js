@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Latex_Automatic Formatting
 // @namespace    http://tampermonkey.net/
-// @version      v0.73
+// @version      v0.72
 // @description  Typesetting the contents of the clipboard
 // @author       Mozikiy
 // @match        http://annot.xhanz.cn/project/*/*
@@ -34,7 +34,7 @@
 
         // Detect selected text
         const selectedText = window.getSelection().toString().trim();
-        const activeElement = document.activeElement;               // current active element is input textarea
+        const activeElement = document.activeElement; // current active element is input textarea
 
         if (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') {
             console.log('Mouse in the text box:', activeElement);
@@ -93,46 +93,163 @@
 const copyToClipboard1 = text => {
     const convertPunctuation = text => {
         // Chinese symbol to English symbol
-        // Mathematical letters changed to latex format
-        // Chemical formula changed to Latex format
-        // Punctuation symbol
-        // Increment formula sign
-        // 选项变为多行选项
-        text = text.replace(/,/g, ', ');
-        text = text.replace(/\./g, '. ');
         text = text.replace(/，/g, ', ');
         text = text.replace(/。/g, '. ');
-        text = text.replace(/&gt;/g, '>');
-        text = text.replace(/&lt;/g, '<');
-        text = text.replace(/, \$/g, '$, ');
-        text = text.replace(/\. \$/g, '$. ');
-        text = text.replace(/λ/g, '$\\lambda$');
-        text = text.replace(/α/g, '$\\alpha$');
-        text = text.replace(/β/g, '$\\beta$');
-        text = text.replace(/γ/g, '$\\gamma$');
-        text = text.replace(/ρ/g, '$\\rho$');
-        text = text.replace(/σ/g, '$\\sigma$');
-        text = text.replace(/θ/g, '$\\sigma$');
-        text = text.replace(/δ/g, '$\\delta$');
-        text = text.replace(/φ/g, '$\\varphi$');
+        text = text.replace(/！/g, '! ');
+        text = text.replace(/？/g, '? ');
+        text = text.replace(/；/g, '; ');
         text = text.replace(/：/g, ': ');
-        text = text.replace(/⋯/g, '\\cdots');
-        // text = text.replace(/x,/g, '$x$,');
-        text = text.replace(/\|/g, '\\vert');
-        text = text.replace(/\. \$/g, '$. ');
-        text = text.replace(/, \$/g, '$, ');
-        text = text.replace(/,,/g, ', ');
-        text = text.replace(/\.\./g, '. ');
-        text = text.replace(/, ,/g, ', ');
-        text = text.replace(/\. \./g, '. ');
+        text = text.replace(/“/g, '"');
+        text = text.replace(/”/g, '"');
+        text = text.replace(/‘/g, "'");
+        text = text.replace(/’/g, "'");
         text = text.replace(/（/g, '(');
         text = text.replace(/）/g, ')');
-        text = text.replace(/［/g, '[');
-        text = text.replace(/］/g, ']');
-        text = text.replace(/C02/g, '$CO_2$');
-        text = text.replace(/H2O/g, '$H_2O$');
-        text = text.replace(/CO2/g, '$CO_2$');
-        text = text.replace(/H20/g, '$H_2O$');
+        text = text.replace(/《/g, '<');
+        text = text.replace(/》/g, '>');
+        text = text.replace(/【/g, '[');
+        text = text.replace(/】/g, ']');
+        text = text.replace(/、/g, ', ');
+        text = text.replace(/⋯/g, '\\cdots');
+
+        // Mathematical letters changed to latex format
+        text = text.replace(/α/g, ' \\alpha ');
+        text = text.replace(/β/g, ' \\beta ');
+        text = text.replace(/γ/g, ' \\gamma ');
+        text = text.replace(/δ/g, ' \\delta ');
+        text = text.replace(/ε/g, ' \\epsilon ');
+        text = text.replace(/ζ/g, ' \\zeta ');
+        text = text.replace(/η/g, ' \\eta ');
+        text = text.replace(/θ/g, ' \\theta ');
+        text = text.replace(/ι/g, ' \\iota ');
+        text = text.replace(/κ/g, ' \\kappa ');
+        text = text.replace(/λ/g, ' \\lambda ');
+        text = text.replace(/μ/g, ' \\mu ');
+        text = text.replace(/ν/g, ' \\nu ');
+        text = text.replace(/ξ/g, ' \\xi ');
+        text = text.replace(/ο/g, ' \\omicron ');
+        text = text.replace(/π/g, ' \\pi ');
+        text = text.replace(/ρ/g, ' \\rho ');
+        text = text.replace(/σ/g, ' \\sigma ');
+        text = text.replace(/τ/g, ' \\tau ');
+        text = text.replace(/υ/g, ' \\upsilon ');
+        text = text.replace(/φ/g, ' \\phi ');
+        text = text.replace(/χ/g, ' \\chi ');
+        text = text.replace(/ψ/g, ' \\psi ');
+        text = text.replace(/ω/g, ' \\omega ');
+        text = text.replace(/Α/g, ' \\Alpha ');
+        text = text.replace(/Β/g, ' \\Beta ');
+        text = text.replace(/Γ/g, ' \\Gamma ');
+        text = text.replace(/Δ/g, ' \\Delta ');
+        text = text.replace(/Ε/g, ' \\Epsilon ');
+        text = text.replace(/Ζ/g, ' \\Zeta ');
+        text = text.replace(/Η/g, ' \\Eta ');
+        text = text.replace(/Θ/g, ' \\Theta ');
+        text = text.replace(/Ι/g, ' \\Iota ');
+        text = text.replace(/Κ/g, ' \\Kappa ');
+        text = text.replace(/Λ/g, ' \\Lambda ');
+        text = text.replace(/Μ/g, ' \\Mu ');
+        text = text.replace(/Ν/g, ' \\Nu ');
+        text = text.replace(/Ξ/g, ' \\Xi ');
+        text = text.replace(/Ο/g, ' \\Omicron ');
+        text = text.replace(/Π/g, ' \\Pi ');
+        text = text.replace(/Ρ/g, ' \\Rho ');
+        text = text.replace(/Σ/g, ' \\Sigma ');
+        text = text.replace(/Τ/g, ' \\Tau ');
+        text = text.replace(/Υ/g, ' \\Upsilon ');
+        text = text.replace(/Φ/g, ' \\Phi ');
+        text = text.replace(/Χ/g, ' \\Chi ');
+        text = text.replace(/Ψ/g, ' \\Psi ');
+        text = text.replace(/Ω/g, ' \\Omega ');
+
+        // Mathematical symbols changed to latex format
+        text = text.replace(/&gt;/g, '>');
+        text = text.replace(/&lt;/g, '<');
+        text = text.replace(/\|/g, '\\vert');
+        text = text.replace(/∠/g, '\\angle ');
+        text = text.replace(/⊥/g, '\\perp ');
+        text = text.replace(/∽/g, '\\sim ');
+        text = text.replace(/∠/g, '\\angle ');
+        text = text.replace(/⊥/g, '\\perp ');
+        text = text.replace(/∽/g, '\\sim ');
+        text = text.replace(/≈/g, '\\approx ');
+        text = text.replace(/≠/g, '\\neq ');
+        text = text.replace(/≤/g, '\\leq ');
+        text = text.replace(/≥/g, '\\geq ');
+        text = text.replace(/∞/g, '\\infty ');
+        text = text.replace(/∑/g, '\\sum ');
+        text = text.replace(/∏/g, '\\prod ');
+        text = text.replace(/∫/g, '\\int ');
+        text = text.replace(/∂/g, '\\partial ');
+        text = text.replace(/√/g, '\\sqrt ');
+        text = text.replace(/∇/g, '\\nabla ');
+        text = text.replace(/×/g, '\\times ');
+        text = text.replace(/÷/g, '\\div ');
+        text = text.replace(/∩/g, '\\cap ');
+        text = text.replace(/∪/g, '\\cup ');
+        text = text.replace(/∈/g, '\\in ');
+        text = text.replace(/∉/g, '\\notin ');
+        text = text.replace(/∅/g, '\\emptyset ');
+        text = text.replace(/∧/g, '\\wedge ');
+        text = text.replace(/∨/g, '\\vee ');
+        text = text.replace(/⊂/g, '\\subset ');
+        text = text.replace(/⊃/g, '\\supset ');
+        text = text.replace(/⊆/g, '\\subseteq ');
+        text = text.replace(/⊇/g, '\\supseteq ');
+        text = text.replace(/≡/g, '\\equiv ');
+        text = text.replace(/⇒/g, '\\Rightarrow ');
+        text = text.replace(/⇔/g, '\\Leftrightarrow ');
+        text = text.replace(/∝/g, '\\propto ');
+        text = text.replace(/∴/g, '\\therefore ');
+        text = text.replace(/∵/g, '\\because ');
+
+
+        // Chemical formula changed to Latex format
+        text = text.replace(/CO2/g, ' CO_2 ')
+        text = text.replace(/C02/g, ' CO_2 ')
+        text = text.replace(/H2O/g, ' H_2O ')
+        text = text.replace(/H20/g, ' H_2O ')
+        text = text.replace(/CH4/g, ' CH_4 ')
+        text = text.replace(/O2/g, ' O_2 ')
+        text = text.replace(/N2/g, ' N_2 ')
+        text = text.replace(/H2/g, ' H_2 ')
+        text = text.replace(/SO2/g, ' SO_2 ')
+        text = text.replace(/S02/g, ' SO_2 ')
+        text = text.replace(/NO2/g, ' NO_2 ')
+        text = text.replace(/N02/g, ' NO_2 ')
+        text = text.replace(/NH3/g, ' NH_3 ')
+        text = text.replace(/C6H12O6/g, ' C_6H_{12}O_6 ')
+        text = text.replace(/C6H1206/g, ' C_6H_{12}O_6 ')
+        text = text.replace(/H2SO4/g, ' H_2SO_4 ')
+        text = text.replace(/H2S04/g, ' H_2SO_4 ')
+        text = text.replace(/NaCl/g, ' NaCl ')
+        text = text.replace(/CaCO3/g, ' CaCO_3 ')
+        text = text.replace(/CaC03/g, ' CaCO_3 ')
+        text = text.replace(/KCl/g, ' KCl ')
+        text = text.replace(/MgO/g, ' MgO ')
+        text = text.replace(/Mg0/g, ' MgO ')
+        text = text.replace(/HCl/g, ' HCl ')
+        text = text.replace(/NaOH/g, ' NaOH ')
+        text = text.replace(/Na0H/g, ' NaOH ')
+        text = text.replace(/KOH/g, ' KOH ')
+        text = text.replace(/K0H/g, ' KOH ')
+        text = text.replace(/Fe2O3/g, ' Fe_2O_3 ')
+        text = text.replace(/Fe203/g, ' Fe_2O_3 ')
+        text = text.replace(/Al2O3/g, ' Al_2O_3 ')
+        text = text.replace(/Al203/g, ' Al_2O_3 ')
+        text = text.replace(/HNO3/g, ' HNO_3 ')
+        text = text.replace(/HN03/g, ' HNO_3 ')
+        text = text.replace(/CH3COOH/g, ' CH_3COOH ')
+        text = text.replace(/CH3C00H/g, ' CH_3COOH ')
+        text = text.replace(/C2H5OH/g, ' C_2H_5OH ');
+        text = text.replace(/C2H50H/g, ' C_2H_5OH ');
+
+        // Punctuation symbol
+        text = text.replace(/([\.,!?:;])/g, ' $1 ')
+                    .replace(/([\.,!?:;])\s*\1/g, ' $1 ');
+
+        // Increment formula sign
+        // 选项变为多行选项
         return text;
     };
 
@@ -145,7 +262,7 @@ const copyToClipboard1 = text => {
 
     const processedText = processText(text);
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {   
+    if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
             console.log(`Copied using clipboard API: ${processedText}`);
         }).catch(err => {
@@ -164,7 +281,7 @@ const copyToClipboard2 = (TextArea) => {
         const end = TextArea.selectionEnd;
 
         const processedText = underline;                                                // Copy content to clipboard
-        if (navigator.clipboard && navigator.clipboard.writeText) {   
+        if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
                 console.log(`Copied using clipboard API: ${processedText}`);
             }).catch(err => {
@@ -190,7 +307,7 @@ const copyToClipboard3 = (text, TextArea) => {
     if (!text.endsWith('$')) text = `${text}$`;
 
     const processedText = text;                                                     // Copy content to clipboard
-    if (navigator.clipboard && navigator.clipboard.writeText) {   
+    if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
             console.log(`Copied using clipboard API: ${processedText}`);
         }).catch(err => {
@@ -217,7 +334,7 @@ const copyToClipboard4 = (text, TextArea) => {
     text = text.replace(/\$/g, '');                 // Delete all $signs from the text
 
     const processedText = text;                                                     // Copy content to clipboard
-    if (navigator.clipboard && navigator.clipboard.writeText) {   
+    if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
             console.log(`Copied using clipboard API: ${processedText}`);
         }).catch(err => {
@@ -249,7 +366,7 @@ const copyToClipboard5 = (text, TextArea) => {
     }
 
     const processedText = text;                                                     // Copy content to clipboard
-    if (navigator.clipboard && navigator.clipboard.writeText) {   
+    if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(processedText).then(() => {                   // If the navigator.clipboard API is supported
             console.log(`Copied using clipboard API: ${processedText}`);
         }).catch(err => {
@@ -391,5 +508,5 @@ const fallbackCopyText = text => {
 };
 
 // log script initialization
-console.log('Latex_Automatic Formatting : v0.73 Script Updated!');
+console.log('Latex_Automatic Formatting : v0.71 Script Updated!');
 })();
